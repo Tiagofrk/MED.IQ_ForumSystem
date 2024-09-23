@@ -1,11 +1,11 @@
 import React from 'react';
-import trpc from '../trpc/routes';
+import { reactionRouter } from '../routes/reactionRouter';
 
 export default function PostList() {
-  const { data: posts } = trpc.posts.listPosts.useQuery();
+  const { data: posts } = reactionRouter.posts.listPosts.useQuery();
 
   const handleReaction = async (postId: number, reaction: 'like' | 'dislike') => {
-    await trpc.reactions.addReaction.mutate({ postId, type: reaction });
+    await reactionRouter.reactions.addReaction.mutate({ postId, type: reaction });
   };
 
   return (
