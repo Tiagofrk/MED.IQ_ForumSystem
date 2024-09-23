@@ -1,34 +1,21 @@
+// src/index.ts
 import { Hono } from 'hono';
-import { createTRPCHandler } from '@trpc/server/adapters/standalone';
-import { userRouter } from '../src/routes/usersRouter';
-import { serve } from '@hono/node-server'; // para rodar localmente
+import { createHTTPHandler } from '@trpc/server/adapters/standalone';
+import { adminRouter } from './routes/adminRouter';
+import { groupRouter } from './routes/groupRouter';
+import { postRouter } from './routes/postsRouter';
+import { userRouter } from './routes/usersRouter';
+import { reactionRouter } from './routes/reactionRouter';
+import 'reflect-metadata';
 
 const app = new Hono();
 
-// Cria o handler do tRPC
-const trpcHandler = createTRPCHandler({
-  router: userRouter,
+app.use('/trpc/admin', createHTTPHandler({ router: adminRouter }));
+app.use('/trpc/group', createHTTPHandler({ router: groupRouter }));
+app.use('/trpc/post', createHTTPHandler({ router: postRouter }));
+app.use('/trpc/user', createHTTPHandler({ router: userRouter }));
+app.use('/trpc/reaction', createHTTPHandler({ router: reactionRouter }));
+
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
 });
-
-// Converte o handler do tRPC para o formato do Hono
-app.all('/trpc', async (c) => {
-  // Adaptar a requisição/response do Hono para o formato esperado pelo tRPC
-  const req = c.req;
-  const res = await trpcHandler({
-    method: req.method,
-    headers: req.headers,
-    body: await req.text(),
-    query: new URLSearchParams(req.query()),
-  });
-  
-  c.res.status = res.status;
-  for (const [key, value] of Object.entries(res.headers)) {
-    c.header(key, value as string);
-  }
-
-  return c.body(res.body);
-});
-
-serve(app, { port: 3000 });
-
-console.log('Server running on http://localhost:3000');

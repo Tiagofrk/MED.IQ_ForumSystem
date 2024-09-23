@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
-import { groupRouter } from '../routes/groupRouter';
+import { trpc } from '../utils/trpc';
 
 export default function GroupList() {
-  const { data: groups } = groupRouter.groups.listGroups.useQuery();
+  const { data: groups } = trpc.group.listGroups.useQuery();
   const [groupName, setGroupName] = useState('');
   const [description, setDescription] = useState('');
 
   const handleCreateGroup = async (e: React.FormEvent) => {
     e.preventDefault();
-    await groupRouter.groups.createGroup.mutate({ name: groupName, description });
+    await trpc.group.createGroup.mutate({ name: groupName, description });
     alert('Group created successfully!');
   };
 
   const handleJoinGroup = async (groupId: number) => {
-    await groupRouter.groups.joinGroup.mutate({ groupId });
+    await trpc.group.joinGroup.mutate({ groupId });
     alert('Joined group successfully!');
   };
 

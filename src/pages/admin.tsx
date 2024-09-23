@@ -1,16 +1,16 @@
 import React from 'react';
-import { adminRouter } from '../routes/adminRouter';
+import { trpc } from '../utils/trpc';
 
 export default function AdminPanel() {
-  const { data: users } = adminRouter.admin.listUsers.useQuery();
+  const { data: users } = trpc.admin.listUsers.useQuery();
 
   const handleBlockUser = async (userId: number) => {
-    await adminRouter.admin.blockUser.mutate({ userId });
+    await trpc.admin.blockUser.mutate({ userId });
     alert('User blocked successfully!');
   };
 
   const handleDeletePost = async (postId: number) => {
-    await adminRouter.admin.deletePost.mutate({ postId });
+    await trpc.admin.deletePost.mutate({ postId });
     alert('Post deleted successfully!');
   };
 
@@ -31,10 +31,10 @@ export default function AdminPanel() {
 }
 
 function PostListWithDelete() {
-  const { data: posts } = adminRouter.posts.listPosts.useQuery();
+  const { data: posts } = trpc.post.listPosts.useQuery();
 
   const handleDeletePost = async (postId: number) => {
-    await adminRouter.admin.deletePost.mutate({ postId });
+    await trpc.post.deletePost.mutate({ postId });
   };
 
   return (

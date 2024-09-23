@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { postsRouter } from '../routes/postsRouter';
+import { trpc } from '../utils/trpc';
 
 export default function CreatePost() {
   const [title, setTitle] = useState('');
@@ -7,7 +7,7 @@ export default function CreatePost() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await postsRouter.posts.createPost.mutate({ title, content });
+    await trpc.post.createPost.mutate({ title, content });
     alert('Post created successfully!');
   };
 
