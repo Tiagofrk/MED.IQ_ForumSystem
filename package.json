@@ -31,5 +31,16 @@
     "@types/react": "^18.3.8",
     "ts-node": "^10.9.1"
   },
-  "description": ""
+  "description": "",
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "src/**/*.ts"
+  ]
 }
