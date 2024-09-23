@@ -2,7 +2,7 @@ import { t } from '../trpc';
 import db from '../db';
 import { z } from 'zod';
 
-export const postRouter = t.router({
+export const postsRouter = t.router({
   // Criação de postagem
   createPost: t.procedure
     .input(

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import trpc from '../trpc/routes';
+import { usersRouter } from '../routes/usersRouter';
 
 export default function Register() {
   const [username, setUsername] = useState('');
@@ -8,7 +8,7 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await trpc.users.createUser.mutate({ username, email, password });
+    await usersRouter.users.createUser.mutate({ username, email, password });
     alert('User created successfully!');
   };
 
