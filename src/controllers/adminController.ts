@@ -5,7 +5,7 @@ import db from '../db';
 
 export const adminController = t.router({
   listUsers: t.procedure.query(async () => {
-    return await db.selectFrom('users').selectAll().execute();
+    return await db.selectFrom({users}).selectAll().execute();
   }),
   blockUser: t.procedure.input(z.object({ userId: z.number() })).mutation(async ({ input }) => {
     await db.updateTable('users').set({ role: 'blocked' }).where('id', '=', input.userId).execute();

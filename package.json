@@ -12,8 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "@hono/node-server": "^1.13.1",
-    "@trpc/client": "^10.45.2",
-    "@trpc/react": "^10.45.2",
+    "@trpc/client": "^7.3.3",
+    "@trpc/react": "7.3.1",
     "@trpc/server": "^10.45.2",
     "hono": "^4.6.2",
     "kysely": "^0.27.4",
