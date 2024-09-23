@@ -3,7 +3,7 @@ import db from '../db';
 import bcrypt from 'bcrypt';
 import { z } from 'zod';
 
-export const userRouter = t.router({
+export const usersRouter = t.router({
   // Cadastro de usuário
   createUser: t.procedure
     .input(
