@@ -14,5 +14,3 @@ export const appRouter = t.router({
   groups: groupRouter,
   admin: adminRouter,
 });
-
-export type AppRouter = typeof appRouter;
