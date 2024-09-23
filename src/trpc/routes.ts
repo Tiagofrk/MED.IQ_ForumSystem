@@ -1,4 +1,4 @@
-import { initTRPC } from '@trpc/server';
+import { ini } from '@trpc/server';
 import { userRouter } from '../routes/usersRouter';
 import { postRouter } from '../routes/postsRouter';
 import { reactionRouter } from '../routes/reactionRouter';
