@@ -1,15 +1,24 @@
 import React, { useState } from 'react';
-import { trpc } from '../utils/trpc';
+import { trpc } from '../utils/trpc'; 
 
 export default function Register() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  // Usar o hook useMutation para registrar a mutação
+  const registerUserMutation = trpc.registerUser.useMutation();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await trpc.user.register.mutate({ username, email, password });
-    alert('User created successfully!');
+    
+    try {
+      // Chama a mutação usando o método mutate
+      await registerUserMutation.mutateAsync({ username, email, password });
+      alert('User created successfully!');
+    } catch (error) {
+      alert('Error creating user: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    }
   };
 
   return (

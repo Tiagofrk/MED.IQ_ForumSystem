@@ -1,5 +1,4 @@
 import { createTRPCReact } from '@trpc/react';
-import type { adminRouter } from '../routes/adminRouter';
-import { appRouter } from '../trpc/routes';
+import type { AppRouter } from '../index';
 
-export const trpc = createTRPCReact();
+export const trpc = createTRPCReact<AppRouter>();

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { t } from '../trpc';
+import { t } from '../trpc/server';
 import db from '../db';
 
 export const reactionController = t.router({

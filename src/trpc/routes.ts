@@ -1,5 +1,5 @@
 import { initTRPC } from '@trpc/server';
-import { userRouter } from '../routes/usersRouter';
+import { userRouter } from '../routes/userRouter';
 import { postRouter } from '../routes/postsRouter';
 import { reactionRouter } from '../routes/reactionRouter';
 import { groupRouter } from '../routes/groupRouter';
@@ -14,3 +14,5 @@ export const appRouter = t.router({
   groups: groupRouter,
   admin: adminRouter,
 });
+
+export type AppRouter = typeof appRouter;

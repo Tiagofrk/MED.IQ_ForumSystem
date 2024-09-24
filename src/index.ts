@@ -4,7 +4,7 @@ import { initTRPC } from '@trpc/server';
 import { adminRouter } from './routes/adminRouter';
 import { groupRouter } from './routes/groupRouter';
 import { postRouter } from './routes/postsRouter';
-import { userRouter } from './routes/usersRouter';
+import { userRouter } from './routes/userRouter';
 import { reactionRouter } from './routes/reactionRouter';
 import 'reflect-metadata';
 
@@ -15,7 +15,7 @@ const appRouter = t.mergeRouters(
   groupRouter,
   postRouter,
   userRouter,
-  reactionRouter,
+  reactionRouter
 );
 
 const app = new Hono();

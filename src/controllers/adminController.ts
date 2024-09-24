@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { t } from '../trpc';
+import { t } from '../trpc/server';
 import db from '../db';
 
 export const adminController = t.router({
@@ -18,17 +18,12 @@ export const adminController = t.router({
     .mutation(async ({ input }) => {
       const { userId } = input;
 
-      try {
-        // Exemplo: Atualizar o role para 'blocked' se houver essa opção
-        await db.updateTable('users')
-          .set({ role: 'blocked' }) // Assegure-se de que 'blocked' seja uma role válida ou ajuste conforme necessário
-          .where('id', '=', userId)
-          .execute();
+      await db.updateTable('users')
+        .set({ role: 'blocked' })
+        .where('id', '=', userId)
+        .execute();
 
-        return { success: true, message: 'Usuário bloqueado com sucesso.' };
-      } catch (error) {
-        return { success: false, message: 'Erro ao bloquear usuário.' };
-      }
+      return { success: true, message: 'Usuário bloqueado com sucesso.' };
     }),
 
   // Excluir postagem
@@ -37,18 +32,14 @@ export const adminController = t.router({
     .mutation(async ({ input }) => {
       const { postId } = input;
 
-      try {
-        const affectedRows = await db.deleteFrom('posts')
-          .where('id', '=', postId)
-          .execute();
+      const affectedRows = await db.deleteFrom('posts')
+        .where('id', '=', postId)
+        .execute();
 
-        if (affectedRows.numDeleted === 0) {
-          return { success: false, message: 'Postagem não encontrada.' };
-        }
-
-        return { success: true, message: 'Postagem excluída com sucesso.' };
-      } catch (error) {
-        return { success: false, message: 'Erro ao excluir postagem.' };
+      if (affectedRows.numDeleted === 0) {
+        return { success: false, message: 'Postagem não encontrada.' };
       }
+
+      return { success: true, message: 'Postagem excluída com sucesso.' };
     }),
 });
