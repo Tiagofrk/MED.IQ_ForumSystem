@@ -11,32 +11,57 @@ const db = new Kysely({
     })
   })
 });
-
-interface User {
+interface Users {
   id: number;
   username: string;
   email: string;
-  role: string;
+  password: string;
+  role: 'user' | 'moderator' | 'admin';
+  created_at: Date;
 }
 
-interface Post {
+interface Posts {
   id: number;
   title: string;
   content: string;
   user_id: number;
+  created_at: Date;
 }
 
-interface Reaction {
+interface Comments {
+  id: number;
+  content: string;
+  post_id: number;
+  user_id: number;
+  created_at: Date;
+}
+
+interface Groups {
+  id: number;
+  name: string;
+  description?: string;
+  created_at: Date;
+}
+
+interface UserGroups {
+  user_id: number;
+  group_id: number;
+}
+
+interface Reactions {
   id: number;
   post_id: number;
   user_id: number;
   type: 'like' | 'dislike';
+  created_at: Date;
 }
 
 interface Database {
-  users: User;
-  posts: Post;
-  reactions: Reaction;
+  users: Users;
+  posts: Posts;
+  comments: Comments;
+  groups: Groups;
+  user_groups: UserGroups;
+  reactions: Reactions;
 }
-
 export default db;
