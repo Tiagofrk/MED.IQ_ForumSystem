@@ -13,7 +13,6 @@ export default function Register() {
     e.preventDefault();
     
     try {
-      // Chama a mutação usando o método mutate
       await registerUserMutation.mutateAsync({ username, email, password });
       alert('User created successfully!');
     } catch (error) {

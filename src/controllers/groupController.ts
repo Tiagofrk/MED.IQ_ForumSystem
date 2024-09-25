@@ -9,11 +9,11 @@ export const groupController = t.router({
       z.object({
         name: z.string().min(1).max(100),
         description: z.string().optional(),
-        members: z.array(z.number()).optional(),
       })
     )
-    .mutation(async ({ input }) => {
-      const { name, description, members } = input;
+    .mutation(async ({ input, ctx }) => {
+      const { name, description } = input;
+      const userId = ctx.user.id; // Extraindo o userId do contexto (usuário autenticado)
 
       try {
         const newGroup = await db
@@ -25,16 +25,13 @@ export const groupController = t.router({
           .returning(['id', 'name', 'description', 'created_at'])
           .executeTakeFirstOrThrow();
 
-        if (members && members.length > 0) {
-          const userGroups = members.map(userId => ({
+        // Opcional: Adicionar o criador do grupo automaticamente como membro
+        await db.insertInto('user_groups')
+          .values({
             user_id: userId,
             group_id: newGroup.id,
-          }));
-
-          await db.insertInto('user_groups')
-            .values(userGroups)
-            .execute();
-        }
+          })
+          .execute();
 
         return newGroup;
       } catch (error) {

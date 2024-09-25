@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { t } from '../trpc/server';
-import db from '../db';
+import db from '../db/index';
+import { Database } from '../path/to/your/database';
 
 export const adminController = t.router({
   // Listar usuários

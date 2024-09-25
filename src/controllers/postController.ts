@@ -9,11 +9,11 @@ export const postController = t.router({
       z.object({
         title: z.string().min(1).max(255),
         content: z.string().min(1),
-        userId: z.number(),
       })
     )
-    .mutation(async ({ input }) => {
-      const { title, content, userId } = input;
+    .mutation(async ({ input, ctx }) => {
+      const { title, content } = input;
+      const userId = ctx.user.id; // Assumindo que o usuário autenticado está disponível no contexto
 
       try {
         const newPost = await db

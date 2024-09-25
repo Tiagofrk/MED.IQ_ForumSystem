@@ -3,6 +3,9 @@ import { initTRPC } from '@trpc/server';
 import { postController } from '../controllers/postController';
 
 const t = initTRPC.create();
+
 export const postRouter = t.router({
-  post: postController,
+  createPost: postController.createPost,
+  listPosts: postController.listPosts,
+  deletePost: postController.deletePost,
 });

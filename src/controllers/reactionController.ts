@@ -27,12 +27,12 @@ export const reactionController = t.router({
     .input(
       z.object({
         postId: z.number(),
-        userId: z.number(),
         type: z.enum(['like', 'dislike']),
       })
     )
-    .mutation(async ({ input }) => {
-      const { postId, userId, type } = input;
+    .mutation(async ({ input, ctx }) => {
+      const { postId, type } = input;
+      const userId = ctx.user.id; // Assumindo que o usuário autenticado esteja disponível no contexto
 
       try {
         // Verificar se o usuário já reagiu à postagem
