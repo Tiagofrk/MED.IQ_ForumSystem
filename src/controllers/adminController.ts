@@ -1,16 +1,21 @@
 import { z } from 'zod';
 import { t } from '../trpc/server';
 import db from '../db/index';
-import { Database } from '../path/to/your/database';
 
 export const adminController = t.router({
   // Listar usuários
   listUsers: t.procedure.query(async () => {
-    const users = await db.selectFrom('users')
-      .select(['id', 'username', 'email', 'role', 'created_at'])
-      .execute();
+    try {
+      const users = await db
+        .selectFrom(db.tables.users) // Usa a referência da tabela
+        .select(['id', 'username', 'email', 'role', 'created_at'])
+        .execute();
 
-    return users;
+      return users;
+    } catch (error) {
+      console.error('Erro ao listar usuários:', error);
+      throw new Error('Não foi possível listar os usuários.');
+    }
   }),
 
   // Bloquear usuário
