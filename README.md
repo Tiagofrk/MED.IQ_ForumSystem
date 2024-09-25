@@ -33,3 +33,10 @@ Para instalar as dependências do projeto, execute:
 
 ```bash
 npm install
+
+##Executar Servidor
+
+Para rodar o servidor, execute:
+
+```bash
+node src/index.ts
