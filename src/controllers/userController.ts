@@ -19,7 +19,7 @@ export const userController = t.router({
         const newUser = await db
           .insertInto('users')
           .values({
-            id: uuidv4(),
+            id: parseInt(uuidv4()),
             username,
             email,
             password, // Considere aplicar hashing na senha antes de armazenar

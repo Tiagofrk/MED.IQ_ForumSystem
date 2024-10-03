@@ -1,4 +1,3 @@
-// src/controllers/postController.ts
 import { z } from 'zod';
 import { t } from '../trpc/server';
 import db from '../db';
@@ -15,7 +14,7 @@ export const postController = t.router({
         const newPost = await db
           .insertInto('posts')
           .values({
-            id: uuidv4(),
+            id: parseInt(uuidv4()),
             title: title,
             content: content,
             user_id: userId,

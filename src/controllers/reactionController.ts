@@ -43,7 +43,7 @@ export const reactionController = t.router({
         const newReaction = await db
           .insertInto('reactions')
           .values({
-            id: uuidv4(),
+            id: parseInt(uuidv4()),
             post_id: postId,
             user_id: userId,
             type: 'like',
