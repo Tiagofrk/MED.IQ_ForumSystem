@@ -2,70 +2,41 @@ import { z } from 'zod';
 import { t } from '../trpc/server';
 import db from '../db';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+
+const userSchema = z.object({
+  name: z.string(),
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string(),
+});
 
 export const userController = t.router({
-  // Cadastro de usuários
-  registerUser: t.procedure
-    .input(
-      z.object({
-        username: z.string().min(3).max(50),
-        email: z.string().email(),
-        password: z.string().min(6),
-      })
-    )
+  register: t.procedure
+    .input(userSchema)
     .mutation(async ({ input }) => {
-      const { username, email, password } = input;
-
-      // Hash da senha
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      try {
-        const newUser = await db
-          .insertInto('users')
-          .values({
-            username,
-            email,
-            password: hashedPassword,
-            role: 'user',
-          })
-          .returning(['id', 'username', 'email', 'role', 'created_at'])
-          .executeTakeFirstOrThrow();
-
-        return newUser;
-      } catch (error: any) {
-        if (error.code === '23505') { // Violação de unicidade
-          throw new Error('Username ou email já existente.');
-        }
-        throw new Error('Erro ao registrar usuário.');
-      }
+      const hashedPassword = await bcrypt.hash(input.password, 10);
+      const newUser = await db.insertInto('users').values({
+        ...input,
+        password: hashedPassword,
+      }).returning('id').executeTakeFirst();
+      return newUser;
     }),
-
-  // Listar usuários
-  listUsers: t.procedure.query(async () => {
-    const users = await db.selectFrom('users')
-      .select(['id', 'username', 'email', 'role', 'created_at'])
-      .execute();
-
-    return users;
-  }),
-
-  // Bloquear usuário (excluir ou alterar status)
-  blockUser: t.procedure
-    .input(z.object({ userId: z.number() }))
+  login: t.procedure
+    .input(loginSchema)
     .mutation(async ({ input }) => {
-      const { userId } = input;
-
-      // Exemplo: Atualizar o role para 'blocked' se houver essa opção
-      // Caso contrário, você pode excluir o usuário ou implementar outra lógica
-      try {
-        await db.updateTable('users')
-          .set({ role: 'user_blocked' }) // Supondo que 'user_blocked' seja uma role válida
-          .where('id', '=', userId)
-          .execute();
-
-        return { success: true, message: 'Usuário bloqueado com sucesso.' };
-      } catch (error) {
-        return { success: false, message: 'Erro ao bloquear usuário.' };
+      const user = await db.selectFrom('users')
+        .selectAll()
+        .where('email', '=', input.email)
+        .executeTakeFirst();
+      if (!user || !(await bcrypt.compare(input.password, user.password))) {
+        throw new Error('Credenciais inválidas.');
       }
+      const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET!, { expiresIn: '1h' });
+      return { token };
     }),
 });
