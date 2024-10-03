@@ -1,16 +1,7 @@
 import { Kysely, PostgresDialect } from 'kysely';
 import { Pool } from 'pg';
 
-const db = new Kysely({
-  dialect: new PostgresDialect({
-    pool: new Pool({
-      database: 'MED.IQ_ForumSystem',
-      host: 'localhost',
-      user: 'postgres',
-      password: 'root'
-    })
-  })
-});
+// Definir a interface do banco de dados
 interface Users {
   id: number;
   username: string;
@@ -56,6 +47,7 @@ interface Reactions {
   created_at: Date;
 }
 
+// Interface geral do banco de dados
 interface Database {
   users: Users;
   posts: Posts;
@@ -64,4 +56,17 @@ interface Database {
   user_groups: UserGroups;
   reactions: Reactions;
 }
+
+// Instância do Kysely tipada com a interface Database
+const db = new Kysely<Database>({
+  dialect: new PostgresDialect({
+    pool: new Pool({
+      database: 'MED.IQ_ForumSystem',
+      host: 'localhost',
+      user: 'postgres',
+      password: 'root'
+    })
+  })
+});
+
 export default db;
