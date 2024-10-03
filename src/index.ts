@@ -1,4 +1,4 @@
-import { Hono } from 'hono';
+import { ExecutionContext, Hono } from 'hono';
 import { createHTTPHandler } from '@trpc/server/adapters/standalone';
 import { initTRPC } from '@trpc/server';
 import { adminRouter } from './routes/adminRouter';
@@ -10,6 +10,7 @@ import 'reflect-metadata';
 
 const t = initTRPC.create();
 
+// Criando o appRouter combinando os routers
 const appRouter = t.mergeRouters(
   adminRouter,
   groupRouter,
@@ -18,26 +19,30 @@ const appRouter = t.mergeRouters(
   reactionRouter
 );
 
-const app = new Hono();
-
-// Criando o manipulador para TRPC
-const handler = createHTTPHandler({
-  router: appRouter,
-  createContext: () => ({}), // Crie o contexto necessário aqui
+const app = new Hono({
+  strict: true, // Modo estrito ativado
+  getPath: (req) => '/' + req.headers.get('host') + req.url.replace(/^https?:\/\/[^/]+(\/[^?]*)/, '$1'),
 });
 
-// Adicionando as rotas do TRPC ao Hono
-app.post('/trpc/*', async (c) => handler(c.req as any, c.res as any));
-app.get('/trpc/*', async (c) => handler(c.req as any, c.res as any));
+// Definindo uma rota GET
+app.get('/hello', (c) => c.text('Hello World!'));
 
-// Adicionando uma rota de teste
-app.get('/', (c) => c.text('Hello Hono!'));
+// Tratando erros
+app.onError((err, c) => {
+  console.error(err);
+  return c.text('Internal Server Error', 500);
+});
+
+// Definindo uma rota padrão 404
+app.notFound((c) => c.text('Not Found', 404));
 
 // Iniciando o servidor
-app.fire({ port: 3000 }).then(() => {
-  console.log('Server is running on http://localhost:3000');
-}).catch((err) => {
-  console.error('Failed to start server:', err);
-});
+const PORT = process.env.PORT || 3000;
+app.fetch = (request: Request, env?: any, ctx?: ExecutionContext) => {
+  return app.fetch(request, env, ctx);
+};
+
+// Se você estiver em um ambiente como Cloudflare Workers
+app.fire(); // Adiciona um ouvinte global para eventos de fetch
 
 export type AppRouter = typeof appRouter;
