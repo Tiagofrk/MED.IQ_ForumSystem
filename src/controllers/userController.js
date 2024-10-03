@@ -48,20 +48,6 @@ exports.userController = server_1.t.router({
             throw new Error('Não foi possível registrar o usuário.');
         }
     })),
-    // Listar usuários
-    listUsers: server_1.t.procedure.query(() => __awaiter(void 0, void 0, void 0, function* () {
-        try {
-            const users = yield db_1.default
-                .selectFrom('users')
-                .select(['id', 'username', 'email', 'role', 'created_at'])
-                .execute();
-            return users;
-        }
-        catch (error) {
-            console.error('Erro ao listar usuários:', error);
-            throw new Error('Não foi possível listar os usuários.');
-        }
-    })),
     // Bloquear usuário
     blockUser: server_1.t.procedure
         .input(zod_1.z.object({ userId: zod_1.z.number() }))

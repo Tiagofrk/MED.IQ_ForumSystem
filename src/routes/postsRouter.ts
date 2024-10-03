@@ -7,5 +7,4 @@ const t = initTRPC.create();
 export const postRouter = t.router({
   createPost: postController.createPost,
   listPosts: postController.listPosts,
-  deletePost: postController.deletePost,
 });

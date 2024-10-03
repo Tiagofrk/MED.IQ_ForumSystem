@@ -35,38 +35,4 @@ export const userController = t.router({
         throw new Error('Não foi possível registrar o usuário.');
       }
     }),
-
-  // Listar usuários
-  listUsers: t.procedure.query(async () => {
-    try {
-      const users = await db
-        .selectFrom('users')
-        .select(['id', 'username', 'email', 'role', 'created_at'])
-        .execute();
-
-      return users;
-    } catch (error) {
-      console.error('Erro ao listar usuários:', error);
-      throw new Error('Não foi possível listar os usuários.');
-    }
-  }),
-
-  // Bloquear usuário
-  blockUser: t.procedure
-    .input(z.object({ userId: z.number() }))
-    .mutation(async ({ input }) => {
-      const { userId } = input;
-
-      try {
-        await db.updateTable('users')
-          .set({ role: 'blocked' })
-          .where('id', '=', userId)
-          .execute();
-
-        return { success: true, message: 'Usuário bloqueado com sucesso.' };
-      } catch (error) {
-        console.error('Erro ao bloquear usuário:', error);
-        throw new Error('Não foi possível bloquear o usuário.');
-      }
-    }),
 });

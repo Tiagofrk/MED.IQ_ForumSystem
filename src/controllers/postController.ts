@@ -45,27 +45,4 @@ export const postController = t.router({
       throw new Error('Não foi possível listar as postagens.');
     }
   }),
-
-  // Excluir postagem
-  deletePost: t.procedure
-    .input(z.object({ postId: z.number() }))
-    .mutation(async ({ input }) => {
-      const { postId } = input;
-
-      try {
-        const affectedRows = await db
-          .deleteFrom('posts')
-          .where('id', '=', postId)
-          .execute();
-
-        if (affectedRows.length === 0) {
-          return { success: false, message: 'Postagem não encontrada.' };
-        }
-
-        return { success: true, message: 'Postagem excluída com sucesso.' };
-      } catch (error) {
-        console.error('Erro ao excluir postagem:', error);
-        throw new Error('Não foi possível excluir a postagem.');
-      }
-    }),
 });

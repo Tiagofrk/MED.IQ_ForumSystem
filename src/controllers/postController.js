@@ -57,24 +57,4 @@ exports.postController = server_1.t.router({
             throw new Error('Não foi possível listar as postagens.');
         }
     })),
-    // Excluir postagem
-    deletePost: server_1.t.procedure
-        .input(zod_1.z.object({ postId: zod_1.z.number() }))
-        .mutation((_a) => __awaiter(void 0, [_a], void 0, function* ({ input }) {
-        const { postId } = input;
-        try {
-            const affectedRows = yield db_1.default
-                .deleteFrom('posts')
-                .where('id', '=', postId)
-                .execute();
-            if (affectedRows.length === 0) {
-                return { success: false, message: 'Postagem não encontrada.' };
-            }
-            return { success: true, message: 'Postagem excluída com sucesso.' };
-        }
-        catch (error) {
-            console.error('Erro ao excluir postagem:', error);
-            throw new Error('Não foi possível excluir a postagem.');
-        }
-    })),
 });

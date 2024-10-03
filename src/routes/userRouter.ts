@@ -6,6 +6,4 @@ const t = initTRPC.create();
 
 export const userRouter = t.router({
   registerUser: userController.registerUser,
-  listUsers: userController.listUsers,
-  blockUser: userController.blockUser,
 });
