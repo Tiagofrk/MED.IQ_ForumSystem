@@ -1,44 +1,50 @@
+// src/controllers/postController.ts
 import { z } from 'zod';
 import { t } from '../trpc/server';
 import db from '../db';
+import { v4 as uuidv4 } from 'uuid';
 
 export const postController = t.router({
-  // Criação de postagens
+  // Criar nova postagem
   createPost: t.procedure
-    .input(
-      z.object({
-        title: z.string().min(1).max(255),
-        content: z.string().min(1),
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      const { title, content } = input;
-      const userId = ctx.user.id; // Assumindo que o usuário autenticado está disponível no contexto
+    .input(z.object({ title: z.string().min(1), content: z.string().min(1), userId: z.number() }))
+    .mutation(async ({ input }) => {
+      const { title, content, userId } = input;
 
       try {
         const newPost = await db
           .insertInto('posts')
           .values({
-            title,
-            content,
+            id: uuidv4(),
+            title: title,
+            content: content,
             user_id: userId,
+            created_at: new Date()
           })
           .returning(['id', 'title', 'content', 'user_id', 'created_at'])
           .executeTakeFirstOrThrow();
 
         return newPost;
       } catch (error) {
-        throw new Error('Erro ao criar postagem.');
+        console.error('Erro ao criar postagem:', error);
+        throw new Error('Não foi possível criar a postagem.');
       }
     }),
 
   // Listar postagens
   listPosts: t.procedure.query(async () => {
-    const posts = await db.selectFrom('posts')
-      .select(['id', 'title', 'content', 'user_id', 'created_at'])
-      .execute();
+    try {
+      const posts = await db
+        .selectFrom('posts')
+        .innerJoin('users', 'users.id', 'posts.user_id') // Junta com a tabela de usuários para obter informações do autor
+        .select(['posts.id', 'posts.title', 'posts.content', 'posts.created_at', 'users.username'])
+        .execute();
 
-    return posts;
+      return posts;
+    } catch (error) {
+      console.error('Erro ao listar postagens:', error);
+      throw new Error('Não foi possível listar as postagens.');
+    }
   }),
 
   // Excluir postagem
@@ -48,17 +54,19 @@ export const postController = t.router({
       const { postId } = input;
 
       try {
-        const affectedRows = await db.deleteFrom('posts')
+        const affectedRows = await db
+          .deleteFrom('posts')
           .where('id', '=', postId)
           .execute();
 
-        if (affectedRows.numDeleted === 0) {
+        if (affectedRows.length === 0) {
           return { success: false, message: 'Postagem não encontrada.' };
         }
 
         return { success: true, message: 'Postagem excluída com sucesso.' };
       } catch (error) {
-        return { success: false, message: 'Erro ao excluir postagem.' };
+        console.error('Erro ao excluir postagem:', error);
+        throw new Error('Não foi possível excluir a postagem.');
       }
     }),
 });

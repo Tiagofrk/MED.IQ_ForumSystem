@@ -1,72 +1,61 @@
 import { z } from 'zod';
 import { t } from '../trpc/server';
 import db from '../db';
+import { v4 as uuidv4 } from 'uuid';
 
 export const reactionController = t.router({
-  // Listar postagens com contagem de reações
+  // Listar postagens com reações
   listPostsWithReactions: t.procedure.query(async () => {
-    const posts = await db
-      .selectFrom('posts')
-      .leftJoin('reactions', 'posts.id', 'reactions.post_id')
-      .select([
-        'posts.id',
-        'posts.title',
-        'posts.content',
-        'posts.user_id',
-        'posts.created_at',
-        db.fn.count('reactions.id').as('reactions_count'),
-      ])
-      .groupBy('posts.id')
-      .execute();
+    try {
+      const postsWithReactions = await db
+        .selectFrom('posts')
+        .innerJoin('reactions', 'reactions.post_id', 'posts.id') // Junta com a tabela de reações
+        .innerJoin('users', 'users.id', 'posts.user_id') // Junta com a tabela de usuários para obter informações do autor
+        .select(['posts.id', 'posts.title', 'posts.content', 'posts.created_at', 'users.username', 'reactions.type'])
+        .execute();
 
-    return posts;
+      return postsWithReactions;
+    } catch (error) {
+      console.error('Erro ao listar postagens com reações:', error);
+      throw new Error('Não foi possível listar as postagens com reações.');
+    }
   }),
 
   // Adicionar reação a uma postagem
   addReaction: t.procedure
-    .input(
-      z.object({
-        postId: z.number(),
-        type: z.enum(['like', 'dislike']),
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      const { postId, type } = input;
-      const userId = ctx.user.id; // Assumindo que o usuário autenticado esteja disponível no contexto
+    .input(z.object({ postId: z.number(), userId: z.number(), type: z.string().min(1) })) // Tipo da reação deve ser uma string não vazia
+    .mutation(async ({ input }) => {
+      const { postId, userId, type } = input;
 
       try {
-        // Verificar se o usuário já reagiu à postagem
+        // Verifica se a reação já existe para evitar duplicatas
         const existingReaction = await db
           .selectFrom('reactions')
-          .select(['id'])
           .where('post_id', '=', postId)
           .where('user_id', '=', userId)
-          .executeTakeFirst();
+          .execute();
 
-        if (existingReaction) {
-          // Atualizar a reação existente
-          await db
-            .updateTable('reactions')
-            .set({ type })
-            .where('id', '=', existingReaction.id)
-            .execute();
-
-          return { success: true, message: 'Reação atualizada com sucesso.' };
-        } else {
-          // Inserir nova reação
-          await db
-            .insertInto('reactions')
-            .values({
-              post_id: postId,
-              user_id: userId,
-              type,
-            })
-            .execute();
-
-          return { success: true, message: 'Reação adicionada com sucesso.' };
+        if (existingReaction.length > 0) {
+          return { success: false, message: 'Reação já adicionada a esta postagem.' };
         }
+
+        // Adiciona nova reação
+        const newReaction = await db
+          .insertInto('reactions')
+          .values({
+            id: uuidv4(),
+            post_id: postId,
+            user_id: userId,
+            type: 'like',
+            created_at: new Date()
+          })
+          .returning(['id', 'post_id', 'user_id', 'type'])
+          .executeTakeFirstOrThrow();
+
+        return { success: true, message: 'Reação adicionada com sucesso.', reaction: newReaction };
       } catch (error) {
-        throw new Error('Erro ao adicionar reação.');
+        console.error('Erro ao adicionar reação:', error);
+        throw new Error('Não foi possível adicionar a reação.');
       }
     }),
 });

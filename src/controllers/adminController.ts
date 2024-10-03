@@ -7,7 +7,7 @@ export const adminController = t.router({
   listUsers: t.procedure.query(async () => {
     try {
       const users = await db
-        .selectFrom(db.tables.users) // Usa a referência da tabela
+      db.selectFrom('users') // Usa a referência da tabela
         .select(['id', 'username', 'email', 'role', 'created_at'])
         .execute();
 
@@ -42,7 +42,7 @@ export const adminController = t.router({
         .where('id', '=', postId)
         .execute();
 
-      if (affectedRows.numDeleted === 0) {
+      if (affectedRows.length  === 0) {
         return { success: false, message: 'Postagem não encontrada.' };
       }
 

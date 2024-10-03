@@ -7,7 +7,7 @@ interface Users {
   username: string;
   email: string;
   password: string;
-  role: 'user' | 'moderator' | 'admin';
+  role: 'user' | 'moderator' | 'admin' | 'blocked';
   created_at: Date;
 }
 
