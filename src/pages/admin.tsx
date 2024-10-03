@@ -22,7 +22,7 @@ export default function AdminPanel() {
       <h2>Gerenciamento de Usuários</h2>
       {isLoadingUsers && <p>Carregando usuários...</p>}
       {isErrorUsers && <p>Erro ao carregar usuários: {usersError?.message}</p>}
-      {users?.map((user) => (
+      {users?.map((user: User) => (
         <div key={user.id}>
           <p>{user.username}</p>
           <button onClick={() => handleBlockUser(user.id)} disabled={blockUserMutation.isLoading}>

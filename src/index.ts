@@ -20,8 +20,24 @@ const appRouter = t.mergeRouters(
 
 const app = new Hono();
 
-app.listen(3000, () => {
+// Criando o manipulador para TRPC
+const handler = createHTTPHandler({
+  router: appRouter,
+  createContext: () => ({}), // Crie o contexto necessário aqui
+});
+
+// Adicionando as rotas do TRPC ao Hono
+app.post('/trpc/*', async (c) => handler(c.req as any, c.res as any));
+app.get('/trpc/*', async (c) => handler(c.req as any, c.res as any));
+
+// Adicionando uma rota de teste
+app.get('/', (c) => c.text('Hello Hono!'));
+
+// Iniciando o servidor
+app.fire({ port: 3000 }).then(() => {
   console.log('Server is running on http://localhost:3000');
+}).catch((err) => {
+  console.error('Failed to start server:', err);
 });
 
 export type AppRouter = typeof appRouter;
