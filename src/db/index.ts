@@ -1,5 +1,6 @@
 import { Kysely, PostgresDialect } from 'kysely';
-import { Pool } from 'pg';
+import pg from 'pg';
+const { Pool } = pg;
 
 // Definir a interface do banco de dados
 interface Users {
