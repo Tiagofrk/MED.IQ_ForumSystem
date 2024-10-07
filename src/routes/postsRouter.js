@@ -8,5 +8,4 @@ const t = server_1.initTRPC.create();
 exports.postRouter = t.router({
     createPost: postController_1.postController.createPost,
     listPosts: postController_1.postController.listPosts,
-    deletePost: postController_1.postController.deletePost,
 });

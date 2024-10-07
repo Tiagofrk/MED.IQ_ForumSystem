@@ -48,21 +48,4 @@ exports.userController = server_1.t.router({
             throw new Error('Não foi possível registrar o usuário.');
         }
     })),
-    // Bloquear usuário
-    blockUser: server_1.t.procedure
-        .input(zod_1.z.object({ userId: zod_1.z.number() }))
-        .mutation((_a) => __awaiter(void 0, [_a], void 0, function* ({ input }) {
-        const { userId } = input;
-        try {
-            yield db_1.default.updateTable('users')
-                .set({ role: 'blocked' })
-                .where('id', '=', userId)
-                .execute();
-            return { success: true, message: 'Usuário bloqueado com sucesso.' };
-        }
-        catch (error) {
-            console.error('Erro ao bloquear usuário:', error);
-            throw new Error('Não foi possível bloquear o usuário.');
-        }
-    })),
 });

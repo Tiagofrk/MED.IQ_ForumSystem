@@ -20,8 +20,8 @@ exports.adminController = server_1.t.router({
     // Listar usuários
     listUsers: server_1.t.procedure.query(() => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const users = yield index_1.default;
-            index_1.default.selectFrom('users') // Usa a referência da tabela
+            const users = yield index_1.default
+                .selectFrom('users') // Usa a referência da tabela
                 .select(['id', 'username', 'email', 'role', 'created_at'])
                 .execute();
             return users;
