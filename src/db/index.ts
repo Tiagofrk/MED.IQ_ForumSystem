@@ -20,14 +20,6 @@ interface Posts {
   created_at: Date;
 }
 
-interface Comments {
-  id: number;
-  content: string;
-  post_id: number;
-  user_id: number;
-  created_at: Date;
-}
-
 interface Groups {
   id: number;
   name: string;
@@ -52,7 +44,6 @@ interface Reactions {
 interface Database {
   users: Users;
   posts: Posts;
-  comments: Comments;
   groups: Groups;
   user_groups: UserGroups;
   reactions: Reactions;

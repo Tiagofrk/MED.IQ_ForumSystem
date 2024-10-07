@@ -21,6 +21,8 @@ const appRouter = t.mergeRouters(
   reactionRouter
 );
 
+export type AppRouter = typeof appRouter;
+
 // Criando o handler do tRPC
 const handler = createHTTPHandler({
   router: appRouter,

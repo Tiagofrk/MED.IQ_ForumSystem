@@ -7,7 +7,7 @@ export const adminController = t.router({
   listUsers: t.procedure.query(async () => {
     try {
       const users = await db
-      db.selectFrom('users') // Usa a referência da tabela
+        .selectFrom('users') // Usa a referência da tabela
         .select(['id', 'username', 'email', 'role', 'created_at'])
         .execute();
 
