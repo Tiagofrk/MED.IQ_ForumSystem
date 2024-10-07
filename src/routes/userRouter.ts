@@ -1,4 +1,3 @@
-// src/routes/userRouter.ts
 import { initTRPC } from '@trpc/server';
 import { userController } from '../controllers/userController';
 
